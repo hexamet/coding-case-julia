@@ -1,0 +1,8 @@
+FROM alpine:latest
+ 
+RUN apk update && apk add sqlite
+ 
+WORKDIR /database
+ 
+# Set the default command to open SQLite
+# CMD ["sqlite3"]

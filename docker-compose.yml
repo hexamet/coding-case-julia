@@ -1,0 +1,23 @@
+services:
+  api:
+    build: 
+      dockerfile: ./docker/api/dockerfile
+    ports:
+     - "8000:80"
+    # environment:
+    #   - DATABASE_URL=some_url:8191
+    env_file:
+      - ./api/.env
+    volumes:
+     - .:/short_location
+  
+  database:
+    build:
+      dockerfile: ./docker/database/dockerfile
+    container_name: database
+    hostname: short_location.db
+    ports:
+      - "8191:8191"
+    volumes:
+      - ./sqlite:/db
+    command: ["tail", "-f", "/dev/null"]  # Keeps the container running
