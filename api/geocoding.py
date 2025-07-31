@@ -15,23 +15,22 @@ def get_uid(value:str)->str:
     hash_obj.update(value.encode("ascii", "ignore"))
     return hash_obj.hexdigest()[0:6]
      
-def build_request(city:str) -> str:
-    geo_request:str = ""
-    if GEO_API:
-        geo_request = f"{GEO_API}/?q={city.lower()}"
-    else:
+def get_url_and_params_for_request(city:str) -> tuple[str, dict[str, Any]]:
+    if not GEO_API:
         raise ValueError("No geo api defined")
     
-    if GEO_LANG:
-        geo_request +=f"&lang={GEO_LANG}"
-    if GEO_LIMIT:
-        geo_request += f"&limit={GEO_LIMIT}"
+    params = {
+        "q": city.lower(),
+        "lang": GEO_LANG,
+        "limit": GEO_LIMIT,
+    }
+    params = {k: v for k, v in params.items() if v}
     
-    return geo_request
+    return GEO_API, params
     
-def get_geo_response(geo_request: str) -> dict[str, Any] :
+def request_geo_api(url: str, params:dict[str, Any], timeout:int=60) -> dict[str, Any] :
     try:
-        response= requests.get(geo_request, timeout=60)
+        response= requests.get(url, params=params, timeout=timeout)
         response.raise_for_status()
         return response.json()
     except requests.HTTPError as e:

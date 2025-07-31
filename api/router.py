@@ -1,8 +1,8 @@
 from fastapi import APIRouter, Body, Depends, HTTPException
 from pydantic import BaseModel
 from geocoding import (
-    get_geo_response, 
-    build_request,
+    request_geo_api, 
+    get_url_and_params_for_request,
     parse_from_json
 )
 from sqlalchemy.orm import Session
@@ -27,7 +27,8 @@ def short_location(city:str=Body(default="München", embed=True), database:Sessi
     # * add checking if city string is a real city and not a village or region
     # * add sth when one city name returns multiple results
     
-    geo_response = get_geo_response(build_request(city))
+    url, params = get_url_and_params_for_request(city)
+    geo_response = request_geo_api(url, params)
     response_city = parse_from_json(geo_response)
     
     try:
