@@ -1,26 +1,19 @@
 import os
 import requests
 from typing import Any
-from dataclasses import dataclass
-import random
-import string
+from database_model import City
+import hashlib
 
 GEO_API = os.getenv("GEO_API", "")
 GEO_LANG = os.getenv("GEO_LANG","")
 GEO_LIMIT = os.getenv("GEO_LIMIT","")
 
 
-def get_uid(length:int=1)->str:
-    characters:str = string.ascii_letters + string.digits
-    return ''.join((random.choice(characters) for i in range(length)))
-    
-@dataclass
-class City():
-    name:str
-    lng: float
-    lat:float
-    id: str = get_uid(length=6)    
-
+def get_uid(value:str)->str:
+    hash_obj = hashlib.sha256()
+    hash_obj.update(value.encode("ascii", "ignore"))
+    return hash_obj.hexdigest()[0:6]
+     
 def build_request(city:str) -> str:
     geo_request:str = ""
     if GEO_API:
