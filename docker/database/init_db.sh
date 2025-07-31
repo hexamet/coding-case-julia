@@ -1,3 +1,3 @@
 #!/bin/bash
 set -e
-mysql -u root "$MYSQL_DATABASE" < /schema.sql
+mysql -u "$MYSQL_USER" -p"$MYSQL_PASSWORD" "$MYSQL_DATABASE"  < /schema.sql
