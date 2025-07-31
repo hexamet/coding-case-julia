@@ -4,20 +4,25 @@ services:
       dockerfile: ./docker/api/dockerfile
     ports:
      - "8000:80"
-    # environment:
-    #   - DATABASE_URL=some_url:8191
     env_file:
       - ./api/.env
     volumes:
-     - .:/short_location
+     - /api.:/api
+    depends_on:
+      - database
   
   database:
     build:
       dockerfile: ./docker/database/dockerfile
     container_name: database
-    hostname: short_location.db
+    environment:
+      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+      MYSQL_DATABASE: city
     ports:
-      - "8191:8191"
+      - "3306:3306"
     volumes:
-      - ./sqlite:/db
-    command: ["tail", "-f", "/dev/null"]  # Keeps the container running
+    - db_data:/var/lib/mysql
+    
+
+volumes:
+  db_data:
