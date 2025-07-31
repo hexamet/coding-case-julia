@@ -17,8 +17,8 @@ def get_uid(length:int=1)->str:
 @dataclass
 class City():
     name:str
-    lat:float
     lng: float
+    lat:float
     id: str = get_uid(length=6)    
 
 def build_request(city:str) -> str:
@@ -54,7 +54,12 @@ def parse_from_json(geo_json:dict[str, Any])->  City:
                 city_name = properties.get("name", "")
             if geometry:=feature.get("geometry"):
                 if coordinates := geometry.get("coordinates"):
-                    city = City(city_name, coordinates[0], coordinates[1], get_uid(6))
+                    city = City(
+                        name=city_name, 
+                        lng=coordinates[0], 
+                        lat=coordinates[1], 
+                        id=get_uid(6)
+                    )
                     return city
     return City("", -1, -1, "")
                     
