@@ -48,10 +48,10 @@ def parse_from_json(geo_json:dict[str, Any])->  City:
             if geometry:=feature.get("geometry"):
                 if coordinates := geometry.get("coordinates"):
                     city = City(
-                        name=city_name, 
+                        city=city_name, 
                         lng=coordinates[0], 
                         lat=coordinates[1], 
-                        id=get_uid(6)
+                        id=get_uid(city_name)
                     )
                     return city
     return City("", -1, -1, "")
