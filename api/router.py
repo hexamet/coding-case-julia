@@ -1,17 +1,24 @@
-from fastapi import APIRouter,Body 
-from typing import Annotated
-from pydantic import BaseModel, Field
+from fastapi import APIRouter, Body, Depends, HTTPException
+from pydantic import BaseModel
 from geocoding import (
     get_geo_response, 
     build_request,
     parse_from_json
 )
+from sqlalchemy.orm import Session
+from database import get_database
+from database_model import City
 
+from requests import HTTPError
 
 router = APIRouter()
 
 class CityURL(BaseModel):
     short_url: str
+    
+class CityCoordinate(BaseModel):
+    latitude: float
+    longitude: float
     
 
 @router.post("/short-location", response_model=CityURL, tags=["city"])
@@ -38,3 +45,17 @@ def short_location(city:str=Body(default="München", embed=True), database:Sessi
     my_city_url = CityURL(short_url=f"http://localhost:8000/{response_city.id}")
     
     return my_city_url
+
+
+@router.get("/{short}", response_model=CityCoordinate, tags=["city"])
+def get_city_from_short(short:str, database:Session = Depends(get_database)) -> CityCoordinate:
+    data = database.query(City).filter(City.id == short).first()
+    
+    if not data:
+        raise HTTPException(status_code=404, detail=f"Short URL not found")
+    
+    city_coords  = CityCoordinate(latitude=data.lat, longitude=data.lng)
+    return city_coords
+    
+        
+
