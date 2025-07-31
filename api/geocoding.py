@@ -3,6 +3,7 @@ import requests
 from typing import Any
 from database_model import City
 import hashlib
+from fastapi import HTTPException
 
 GEO_API = os.getenv("GEO_API", "")
 GEO_LANG = os.getenv("GEO_LANG","")
@@ -29,14 +30,17 @@ def build_request(city:str) -> str:
     return geo_request
     
 def get_geo_response(geo_request: str) -> dict[str, Any] :
-    response= requests.get(geo_request, timeout=60)
-    response.raise_for_status()
-    if response.status_code == 200:
+    try:
+        response= requests.get(geo_request, timeout=60)
+        response.raise_for_status()
         return response.json()
-    else:
-        raise ConnectionError(f"No response from request: {geo_request}")
+    except requests.HTTPError as e:
+        raise HTTPException(
+            status_code= response.status_code,
+            detail = f"error calling geo api: {e}"
+                            )
     
-def parse_from_json(geo_json:dict[str, Any])->  City:
+def parse_from_json(geo_json:dict[str, Any])->  City|None:
     # we assume the geo json looks like this example:
     # https://photon.komoot.io/api/?q=berlin&limit=1
     
@@ -55,7 +59,7 @@ def parse_from_json(geo_json:dict[str, Any])->  City:
                         id=get_uid(city_name)
                     )
                     return city
-    return City("", -1, -1, "")
+    return None
                     
                     
             

@@ -8,8 +8,7 @@ from geocoding import (
 from sqlalchemy.orm import Session
 from database import get_database
 from database_model import City
-
-from requests import HTTPError
+from sqlalchemy.exc import OperationalError
 
 router = APIRouter()
 
@@ -27,20 +26,18 @@ def short_location(city:str=Body(default="München", embed=True), database:Sessi
     # * add pattern to check for digits in names
     # * add checking if city string is a real city and not a village or region
     # * add sth when one city name returns multiple results
-    try:
-        geo_response = get_geo_response(build_request(city))
-        response_city = parse_from_json(geo_response)
-    except ConnectionError:
-        raise HTTPException(status_code=500,detail="sht went wrong")
-    except HTTPError:
-        raise HTTPException(status_code=500, detail="Cannot connect to geo api")
+    
+    geo_response = get_geo_response(build_request(city))
+    response_city = parse_from_json(geo_response)
     
     try:
         database.add(response_city)
         database.commit()
         database.refresh(response_city)
+    except OperationalError:
+        raise HTTPException(status_code=503, detail="Datenbank derzeit nicht erreichbar.")
     except Exception:
-        raise HTTPException(status_code=500, detail="Error connecting to database")
+        raise HTTPException(status_code=500, detail="Unknown error.")
     
     my_city_url = CityURL(short_url=f"http://localhost:8000/{response_city.id}")
     
