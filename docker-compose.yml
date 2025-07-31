@@ -6,23 +6,19 @@ services:
      - "8000:80"
     env_file:
       - ./api/.env
-    volumes:
-     - /api.:/api
     depends_on:
       - database
-  
+
   database:
     build:
       dockerfile: ./docker/database/dockerfile
     container_name: database
     environment:
-      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_USER: myuser
+      MYSQL_PASSWORD: mypassword
       MYSQL_DATABASE: city
     ports:
       - "3306:3306"
-    volumes:
-    - db_data:/var/lib/mysql
-    
 
-volumes:
-  db_data:
+  
