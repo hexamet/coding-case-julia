@@ -9,7 +9,6 @@ services:
     depends_on:
       - database
     command: ["pytest"]
-    # "testing/integration"]
 
   database:
     build:
