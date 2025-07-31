@@ -10,7 +10,7 @@ from geocoding import (
 
 router = APIRouter()
 
-class City_URL(BaseModel):
+class CityURL(BaseModel):
     short_url: str
     
 
