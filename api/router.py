@@ -31,6 +31,8 @@ def short_location(city:str=Body(default="München", embed=True), database:Sessi
     geo_response = request_geo_api(url, params)
     response_city = parse_from_json(geo_response)
     
+    if not response_city:
+        raise HTTPException(status_code=500, detail=f"Cannot find city: {city}")
     try:
         database.add(response_city)
         database.commit()
@@ -39,10 +41,11 @@ def short_location(city:str=Body(default="München", embed=True), database:Sessi
         raise HTTPException(status_code=503, detail="Cannot connect to database")
     except Exception:
         raise HTTPException(status_code=500, detail="Unknown error.")
-    
+
     my_city_url = CityURL(short_url=f"http://localhost:8000/{response_city.id}")
-    
+
     return my_city_url
+    
 
 
 @router.get("/{short}", response_model=CityCoordinate, tags=["city"])
