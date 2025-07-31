@@ -1,0 +1,13 @@
+FROM python:3.12-slim
+
+WORKDIR /short_location
+
+COPY ./docker/api/requirements.txt api_requirements.txt
+COPY ./docker/testing/requirements.txt testing_requirements.txt
+RUN pip install --no-cache-dir --upgrade pip &&\
+    pip install  -r /short_location/api_requirements.txt &&\
+    pip install  -r /short_location/testing_requirements.txt
+
+COPY ./api api
+COPY ./testing/test_integration api
+

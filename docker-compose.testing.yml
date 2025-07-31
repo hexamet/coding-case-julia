@@ -1,0 +1,26 @@
+services:
+  api:
+    build: 
+      dockerfile: ./docker/testing/dockerfile
+    ports:
+     - "8000:80"
+    env_file:
+      - ./testing/.env
+    depends_on:
+      - database
+    command: ["pytest"]
+    # "testing/integration"]
+
+  database:
+    build:
+      dockerfile: ./docker/database/dockerfile
+    container_name: database
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_USER: myuser
+      MYSQL_PASSWORD: mypassword
+      MYSQL_DATABASE: test
+    ports:
+      - "3306:3306"
+
+  
