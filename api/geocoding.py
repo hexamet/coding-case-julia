@@ -28,7 +28,7 @@ def get_url_and_params_for_request(city:str) -> tuple[str, dict[str, Any]]:
     
     return GEO_API, params
     
-def request_geo_api(url: str, params:dict[str, Any], timeout:int=60) -> dict[str, Any] :
+def request_from_geo_api(url: str, params:dict[str, Any], timeout:int=60) -> dict[str, Any] :
     try:
         response= requests.get(url, params=params, timeout=timeout)
         response.raise_for_status()
@@ -59,8 +59,12 @@ def parse_from_json(geo_json:dict[str, Any])->  City|None:
                     )
                     return city
     return None
-                    
-                    
+                  
+def get_geo_data(city_name:str)-> City:
+    url, params = get_url_and_params_for_request(city_name)
+    geo_response = request_from_geo_api(url, params)
+    city_geo_data = parse_from_json(geo_response)
+    return city_geo_data                    
             
     
     

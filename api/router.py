@@ -1,12 +1,10 @@
 from fastapi import APIRouter, Body, Depends, HTTPException
 from pydantic import BaseModel
 from geocoding import (
-    request_geo_api, 
-    get_url_and_params_for_request,
-    parse_from_json
+    get_geo_data
 )
 from sqlalchemy.orm import Session
-from database import get_database
+from database import get_database, add_city_to_database
 from database_model import City
 from sqlalchemy.exc import OperationalError
 
@@ -21,32 +19,27 @@ class CityCoordinate(BaseModel):
     
 
 @router.post("/short-location", response_model=CityURL, tags=["city"])
-def short_location(city:str=Body(default="München", embed=True), database:Session = Depends(get_database))-> CityURL:
+def short_location(city_name:str=Body(default="München", embed=True), database:Session = Depends(get_database))-> CityURL:
     #TODO: 
     # * add pattern to check for digits in names
     # * add checking if city string is a real city and not a village or region
     # * add sth when one city name returns multiple results
+    # * change get_geo_data to servic class
+       
+    city_geo_data = get_geo_data(city_name=city_name)
     
-    url, params = get_url_and_params_for_request(city)
-    geo_response = request_geo_api(url, params)
-    response_city = parse_from_json(geo_response)
-    
-    if not response_city:
-        raise HTTPException(status_code=500, detail=f"Cannot find city: {city}")
+    if not city_geo_data:
+        raise HTTPException(status_code=500, detail=f"Cannot find city: {city_name}")
     try:
-        database.add(response_city)
-        database.commit()
-        database.refresh(response_city)
+        add_city_to_database(city_geo_data, database)
     except OperationalError:
         raise HTTPException(status_code=503, detail="Cannot connect to database")
-    except Exception:
-        raise HTTPException(status_code=500, detail="Unknown error.")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Unknown error. {e}")
 
-    my_city_url = CityURL(short_url=f"http://localhost:8000/{response_city.id}")
+    my_city_url = CityURL(short_url=f"http://localhost:8000/{city_geo_data.id}")
 
     return my_city_url
-    
-
 
 @router.get("/{short}", response_model=CityCoordinate, tags=["city"])
 def get_city_from_short(short:str, database:Session = Depends(get_database)) -> CityCoordinate:

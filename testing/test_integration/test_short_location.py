@@ -1,6 +1,6 @@
 from fastapi.testclient import TestClient
 from main import app
-
+# TODO: write test with city: ABC75z
 def test_short_location_integration():
     client = TestClient(app)
     response = client.post("/short-location", json={"city": "Berlin"})

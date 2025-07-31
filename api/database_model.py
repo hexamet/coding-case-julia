@@ -8,5 +8,5 @@ class City(Base):
 
     id = Column(String, primary_key=True, index=True)
     city = Column(String)
-    lat = Column(Float, index=True) #, unique=True, index=True)
-    lng = Column(Float) #, unique=True, index=True)
+    lat = Column(Float)
+    lng = Column(Float)

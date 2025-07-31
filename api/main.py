@@ -7,4 +7,4 @@ app.include_router(router)
 
 @app.get("/")
 def read_root():
-    return {"Wellcome to": "Short Location"}
+    return {"Welcome to: ": "Short Location"}

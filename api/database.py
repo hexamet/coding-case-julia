@@ -2,8 +2,10 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from database_model import Base
+from sqlalchemy.orm import Session
 import os
 import time
+from database_model import City
 
 DB_USER = os.getenv("MYSQL_USER","")
 DB_PASSWORD = os.getenv("MYSQL_PASSWORD","")
@@ -33,3 +35,8 @@ def get_database():
         yield database
     finally:
         database.close()
+        
+def add_city_to_database(city:City, database:Session):
+    database.add(city)
+    database.commit()
+    database.refresh(city)
