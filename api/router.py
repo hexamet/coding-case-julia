@@ -36,7 +36,7 @@ def short_location(city:str=Body(default="München", embed=True), database:Sessi
         database.commit()
         database.refresh(response_city)
     except OperationalError:
-        raise HTTPException(status_code=503, detail="Datenbank derzeit nicht erreichbar.")
+        raise HTTPException(status_code=503, detail="Cannot connect to database")
     except Exception:
         raise HTTPException(status_code=500, detail="Unknown error.")
     
