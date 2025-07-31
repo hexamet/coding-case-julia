@@ -30,6 +30,7 @@ def build_request(city:str) -> str:
     
 def get_geo_response(geo_request: str) -> dict[str, Any] :
     response= requests.get(geo_request, timeout=60)
+    response.raise_for_status()
     if response.status_code == 200:
         return response.json()
     else:
