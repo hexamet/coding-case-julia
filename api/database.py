@@ -6,6 +6,7 @@ from sqlalchemy.orm import Session
 import os
 import time
 from database_model import City
+from api_logging import logger
 
 DB_USER = os.getenv("MYSQL_USER","")
 DB_PASSWORD = os.getenv("MYSQL_PASSWORD","")
@@ -21,8 +22,8 @@ for _ in range(10):
     try:
         connection = engine.connect()
     except Exception as e:
-        print(e)
-        print("Retying")
+        logger.warning(e)
+        logger.info("Retying")
         time.sleep(3)
         
 session_local = sessionmaker(autocommit=False, autoflush=False, bind=engine)
