@@ -8,5 +8,5 @@ RUN pip install --no-cache-dir --upgrade -r /short_location/requirements.txt
 
 COPY ./api api
 
-CMD ["fastapi", "run", "./api/main.py", "--port", "80" ]
+CMD ["fastapi", "run", "./api/main.py", "--port", "80"]
 
