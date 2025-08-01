@@ -3,7 +3,6 @@
 ## SHORT LOCATION
 
 ### REQUIREMENTS
-* Python 3.12
 * Docker environment
 
 ### Running and using the docker container
@@ -21,8 +20,7 @@ docker-compose up -d --build
 + The testcase is setup inside the docker-compose.testing.yml
 + To run the test call the following command from the terminal:
 ```bash
-docker compose -f docker-compose.testing build
-docker compose -f docker-compose.testing up --build
+docker compose -f docker-compose.testing.yml up --build
 ```
 + It will build and run the testing environment
 + You can follow the logs on the terminal
@@ -31,3 +29,4 @@ docker compose -f docker-compose.testing up --build
 + You can pass other geo graphical locations than cities into the post request and get a result if this location exist
 + There can be more than one result for a inserted city, but only the first result is return currently
 + The used geo api can be throttled. Requests that worked in first place might fail in a second call. This is part of the *terms of use* of https://photon.komoot.io
++ City names like *test* or *m1* will generate a respons form https://photon.komoot.io as well, but the result is not clear
