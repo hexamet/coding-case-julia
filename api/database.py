@@ -30,14 +30,25 @@ session_local = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 Base.metadata.create_all(bind=engine)
 
-def get_database():
-    database = session_local()
+def get_session():
+    session = session_local()
     try:
-        yield database
+        yield session
     finally:
-        database.close()
+        session.close()
         
-def add_city_to_database(city:City, database:Session):
-    database.add(city)
-    database.commit()
-    database.refresh(city)
+def add_city_to_database(city:City, session:Session):
+    
+    if entry_exists(city, session):
+        logger.info(f"City '{city.city}' already exists")
+        return
+        
+    session.add(city)
+    session.commit()
+    session.refresh(city)
+    
+def entry_exists(city:City, session:Session)-> bool:
+    if session.query(City).filter(City.id == city.id).first():
+        return True
+    return False
+    
