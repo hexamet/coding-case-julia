@@ -19,7 +19,11 @@ class CityCoordinate(BaseModel):
     
 
 @router.post("/short-location", response_model=CityURL, tags=["city"])
-def short_location(city_name:str=Body(default="München", embed=True), database:Session = Depends(get_database))-> CityURL:
+def short_location(
+                   city_name:str=Body(default="München", embed=True),
+                   geo_locator: PhotonCityLocation = Depends(PhotonCityLocation), 
+                   session:Session = Depends(get_session)
+    )-> CityURL:
     #TODO: 
     # * add pattern to check for digits in names
     # * add checking if city string is a real city and not a village or region
