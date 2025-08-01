@@ -12,6 +12,7 @@
 docker-compose up -d --build
 ```
 + This command builds and runs the docker environment in a detached mode
++ Be aware connecting the fast api with the database might take some time. Check the docker logging, that the fast api is ready to be used
 + You can now test the service manually by calling this url: http://localhost:8000/docs#
 + From here you can test the single routes
 
