@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Body, Depends, HTTPException
 from pydantic import BaseModel
 from geocoding import (
-    get_geo_data
+    PhotonCityLocation
 )
 from sqlalchemy.orm import Session
 from database import get_database, add_city_to_database
@@ -26,7 +26,7 @@ def short_location(city_name:str=Body(default="München", embed=True), database:
     # * add sth when one city name returns multiple results
     # * change get_geo_data to servic class
        
-    city_geo_data = get_geo_data(city_name=city_name)
+    city_geo_data = geo_locator.get_geo_data(city_name)
     
     if not city_geo_data:
         raise HTTPException(status_code=500, detail=f"Cannot find city: {city_name}")
