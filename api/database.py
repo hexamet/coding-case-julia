@@ -20,11 +20,11 @@ engine = create_engine(DATABASE_URL)
 #wait for database
 for _ in range(10):
     try:
+        time.sleep(5)
         connection = engine.connect()
     except Exception as e:
         logger.warning(e)
-        logger.info("Retying")
-        time.sleep(3)
+        logger.info("Retrying")
         
 session_local = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
